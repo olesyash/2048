@@ -38,7 +38,7 @@ public class GameLogic
 				break;
 			}
 			Tile t = new Tile(value, row, column);
-			board[row][column] = t;
+			board[column][row] = t;
 		}
 	}
 
@@ -56,7 +56,7 @@ public class GameLogic
 					if(t!= null)
 					{
 						int k = j-1;
-						if(t.getCol() > 0)
+						if(t.getRow() > 0)
 						{
 							while(k>=0 && board[i][k] == null)
 							{
@@ -82,13 +82,107 @@ public class GameLogic
 
 			break;
 		case 1:
+			
+			for(int i=0; i < n; i++)
+			{
+				for(int j=0; j < n; j++)
+				{
+					t = null;
+					t = board[i][j];
+					if(t!= null)
+					{
+						int k = i-1;
+						if(t.getCol() > 0)
+						{
+							while(k>=0 && board[k][j] == null)
+							{
+								t.setCol(k);
+								board[k][j] = t;
+								board[k+1][j] = null;
+								k--;
+
+							}
+							if(k >=0)
+							{
+								newTile = union(board[k+1][j], board[k][j]);
+								if(newTile!= null)
+								{
+									board[k][j] = newTile;
+									board[k+1][j] = null;
+								}
+							}
+						}
+					}
+				}
+			}
 
 			break;
 		case 2:
-
+			for(int i=n-1; i >=0 ;i--)
+			{
+				for(int j=0; j < n; j++)
+				{
+					t = null;
+					t = board[i][j];
+					if(t!= null)
+					{
+						int k = i+1;
+						if(t.getCol() < n )
+						{
+							while(k>0 && k<n && board[k][j] == null)
+							{
+								t.setCol(k);
+								board[k][j] = t;
+								board[k-1][j] = null;
+								k++;
+							}
+							if(k <n)
+							{
+								newTile = union(board[k-1][j],board[k][j]);
+								if(newTile!= null)
+								{
+									board[k][j] = newTile;
+									board[k-1][j] = null;
+								}
+							}
+						}
+					}
+				}
+			}
 			break;
 		case 3:
-
+//			for(int i=0; i < n; i++)
+//			{
+//				for(int j=0; j < n; j++)
+//				{
+//					t = null;
+//					t = board[i][j];
+//					if(t!= null)
+//					{
+//						int k = i-1;
+//						if(t.getCol() > 0)
+//						{
+//							while(k>=0 && board[k][j] == null)
+//							{
+//								t.setCol(k);
+//								board[k][j] = t;
+//								board[k+1][j] = null;
+//								k--;
+//
+//							}
+//							if(k >=0)
+//							{
+//								newTile = union(board[k+1][j], board[k][j]);
+//								if(newTile!= null)
+//								{
+//									board[k][j] = newTile;
+//									board[k+1][j] = null;
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
 			break;
 
 		}

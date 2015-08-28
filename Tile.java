@@ -44,6 +44,10 @@ public class Tile
 	{
 		return row;
 	}
+	public void setCol(int r)
+	{
+		this.column = r;
+	}
 	public void setRow(int r)
 	{
 		this.row = r;
