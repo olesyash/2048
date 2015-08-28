@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class GameLogic 
 {
-	private final int startupTiles = 4;
+	private final int startupTiles = 10;
 	private final int WIN = 2048;
 	private final int BASIC = 2;
 	private Random randomGenerator = new Random();
@@ -45,8 +45,9 @@ public class GameLogic
 	public void move(int direction) //0 up, 1 left, 2 right, 3 down
 	{
 		Tile newTile;
+		Tile merged = null;
 		switch (direction) {
-		case 0:
+		case 0: //up
 			for(int i=0; i < n; i++)
 			{
 				for(int j=0; j < n; j++)
@@ -66,26 +67,28 @@ public class GameLogic
 								k--;
 
 							}
-							if(k >=0)
+							if(k>=0 && board[i][k] != merged)
 							{
 								newTile = union(board[i][k+1], board[i][k]);
 								if(newTile!= null)
 								{
 									board[i][k] = newTile;
 									board[i][k+1] = null;
+									merged = newTile;
 								}
 							}
+
 						}
 					}
 				}
 			}
 
 			break;
-		case 1:
-			
-			for(int i=0; i < n; i++)
+		case 1: //left
+	
+			for(int j=0; j < n; j++)
 			{
-				for(int j=0; j < n; j++)
+				for(int i=0; i < n; i++)
 				{
 					t = null;
 					t = board[i][j];
@@ -100,27 +103,28 @@ public class GameLogic
 								board[k][j] = t;
 								board[k+1][j] = null;
 								k--;
-
 							}
-							if(k >=0)
+							if(k>=0 && board[k][j] != merged)
 							{
 								newTile = union(board[k+1][j], board[k][j]);
 								if(newTile!= null)
 								{
 									board[k][j] = newTile;
 									board[k+1][j] = null;
+									merged = newTile;
 								}
 							}
+
 						}
 					}
 				}
 			}
 
 			break;
-		case 2:
-			for(int i=n-1; i >=0 ;i--)
+		case 2: //right
+			for(int j=0; j < n; j++)
 			{
-				for(int j=0; j < n; j++)
+				for(int i=n-1; i >=0 ;i--)
 				{
 					t = null;
 					t = board[i][j];
@@ -136,53 +140,67 @@ public class GameLogic
 								board[k-1][j] = null;
 								k++;
 							}
-							if(k <n)
+							if(k<n && board[k][j] != merged)
 							{
-								newTile = union(board[k-1][j],board[k][j]);
+								newTile = union(board[k-1][j], board[k][j]);
 								if(newTile!= null)
 								{
 									board[k][j] = newTile;
 									board[k-1][j] = null;
+									merged = newTile;
 								}
 							}
+
 						}
 					}
 				}
 			}
 			break;
-		case 3:
-//			for(int i=0; i < n; i++)
-//			{
-//				for(int j=0; j < n; j++)
-//				{
-//					t = null;
-//					t = board[i][j];
-//					if(t!= null)
-//					{
-//						int k = i-1;
-//						if(t.getCol() > 0)
-//						{
-//							while(k>=0 && board[k][j] == null)
-//							{
-//								t.setCol(k);
-//								board[k][j] = t;
-//								board[k+1][j] = null;
-//								k--;
-//
-//							}
-//							if(k >=0)
-//							{
-//								newTile = union(board[k+1][j], board[k][j]);
-//								if(newTile!= null)
+		case 3: //down
+			for(int i=n-1; i>=0; i--)
+			{
+				for(int j=n-1; j>=0; j--)
+				{
+					t = null;
+					t = board[i][j];
+					if(t!= null)
+					{
+						int k = j+1;
+						if(t.getRow() < n-1)
+						{
+							while(k<n && board[i][k] == null)
+							{
+								t.setRow(k);
+								board[i][k] = t;
+								board[i][k-1] = null;
+								k++;
+
+							}
+							if(k<n && merged != board[i][k])
+							{
+								newTile = union(board[i][k-1], board[i][k]);
+								
+								if(newTile!= null)
+								{
+									board[i][k] = newTile;
+									board[i][k-1] = null;
+									merged = newTile;
+								}
+							}
+							
+					//		if(k<n && merged != board[i][k])
 //								{
-//									board[k][j] = newTile;
-//									board[k+1][j] = null;
+//									newTile = union(board[i][k-1], board[i][k]);
+//									step(board[i][k-1], board[i][k], newTile);
+//									if (newTile != null)
+//										merged = newTile;
 //								}
-//							}
-//						}
-//					}
-//				}
-//			}
+							
+
+						}
+					}
+				}
+			}			
 			break;
 
 		}
@@ -195,10 +213,19 @@ public class GameLogic
 		{
 			if(t1.getValue() == t2.getValue())
 			{
-				t = new Tile(t1.getValue()*2, t2.getRow(), t2.getRow());
+				t = new Tile(t1.getValue()*2, t2.getRow(), t2.getCol());
 			}
 		}
 		return t;
+	}
+	
+	public void step(Tile oldPlace, Tile newPlace, Tile newTile)
+	{
+		if (newTile != null)
+		{
+			newPlace = newTile;
+			oldPlace = null;
+		}
 	}
 }
 
