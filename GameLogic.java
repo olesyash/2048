@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Random;
 
 public class GameLogic 
@@ -8,7 +9,7 @@ public class GameLogic
 	private final int LEFT = 1;
 	private final int RIGHT = 2;
 	private final int DOWN = 3;
-	
+
 	private final int startupTiles = 2; //Number of tiles that appear in the start of the game
 	private final int WIN_NUMBER = 2048; //Winning tile  
 	private final int BASIC = 2; //Minimum value for starter tiles 
@@ -17,8 +18,9 @@ public class GameLogic
 	private int n; // size of the board
 	private int row, column, place, basic, value; 
 	private Tile t; 
-	private Tile[][] board; //Board for keeping tiles state
+	private Tile[][] board, board2; //Board for keeping tiles state
 	private boolean full; // True if Board is full 
+	private boolean first = true; // to check if first time move 
 	public boolean win; // True if winning the game
 	public boolean loose; // True if loosing the game
 
@@ -31,6 +33,7 @@ public class GameLogic
 		this.board = new Tile[n][n];
 		this.numbers = new boolean[n*n];
 		createNewTiles(startupTiles);
+		board2 = new Tile[n][n];
 
 	}
 
@@ -41,6 +44,7 @@ public class GameLogic
 		Tile merged = null;
 		full = false;
 		checkGameOver(); //Check if loosed the game
+		copyBoard(); // Use private function to save board state
 		if(!loose)  // If not, make a step 
 		{
 			switch (direction) {
@@ -158,7 +162,7 @@ public class GameLogic
 					}
 				}
 				break;
-				
+
 				//--------------------  move down -----------------------
 			case DOWN: 
 				for(int i=n-1; i>=0; i--)
@@ -200,10 +204,64 @@ public class GameLogic
 				break;
 
 			}
-			createNewTiles(1);
+			if (first) // if first move create new tile anyway
+			{
+				createNewTiles(1);
+				first = false;
+			}
+			else // if not first time, add new tile only if was sinificant move(something changed)
+			{
+				if(!(compare(board, board2)))
+					createNewTiles(1);
+			}
 
 		}
 
+	}
+
+	//Function to compare old-board to new-board
+	private boolean compare(Tile[][] a, Tile[][] b)
+	{
+		for(int i=0; i<n; i++)
+		{
+			for(int j=0; j<n; j++)
+			{
+				if(!compareTile(a[i][j], b[i][j]))
+					return false;
+			}
+		}
+		return true;
+	}
+
+	//Function to compare Tiles 
+	private boolean compareTile(Tile a, Tile b)
+	{
+		if(a == null  && b == null)
+		{
+			return true;
+		}
+		else if(a == null | b == null)
+		{
+			return false;
+		}
+		else
+		{
+			if(a.getValue()!=b.getValue())
+				return false;
+		}
+		return true;
+	}
+	//Function to copy the board 
+	private void copyBoard()
+	{
+		for(int i=0; i<n; i++)
+		{
+			for(int j=0; j<n; j++)
+			{
+				board2[i][j] = board[i][j];
+			}
+			
+		}
 	}
 
 	//Function to check if union is possible. If yes, returns new Tile. Check if win after union 
@@ -261,7 +319,7 @@ public class GameLogic
 		int place = col*n + row;
 		numbers[place] = true;
 	}
-//Function to delete tile using row and column 
+	//Function to delete tile using row and column 
 	private void removeTile(int col, int row)
 	{
 		board[col][row] = null;
@@ -307,7 +365,7 @@ public class GameLogic
 	{
 		return board;
 	}
-	
-	
+
+
 }
 
